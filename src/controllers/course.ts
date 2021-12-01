@@ -1,6 +1,6 @@
 import {Request, Response} from 'express'
 import courses from './../db/courses';
-import Course from './../models/course'
+import {Course} from './../models/course'
 
 const getAllCourses = (req: Request, res: Response) =>{
     return res.json(courses);
@@ -15,8 +15,12 @@ const getCourseWithId = (req: Request, res: Response) =>{
 };
 
 const addCourse = (req: Request, res: Response) =>{
+    let id = 0;
+    if(courses.length > 0){
+        id = courses[courses.length-1].id + 1;
+    } 
     const course: Course = {
-        id: courses.length + 1,
+        id: id,
         name: req.body.name
     }
     courses.push(course);
@@ -24,11 +28,22 @@ const addCourse = (req: Request, res: Response) =>{
 };
 
 const updateCourse = (req: Request, res: Response) =>{
-    return res.status(200).json(req.params.id);
+    const course = courses.find(c => c.id === parseInt(req.params.id));
+    if(!course){
+        return res.status(404).send('A course with given id is not found');
+    }
+    course.name = req.body.name;
+    return res.json(course);
 };
 
 const deleteCourse = (req: Request, res: Response) =>{
-    return res.status(200).json(req.params.id);
+    const course = courses.find(c => c.id === parseInt(req.params.id));
+    if(!course){
+        return res.status(404).send('A course with given id is not found');
+    }
+    const index = courses.indexOf(course);
+    courses.splice(index, 1);
+    return res.json(course);
 };
 
 export default {getAllCourses, getCourseWithId, updateCourse, addCourse, deleteCourse}
