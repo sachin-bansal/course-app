@@ -1,6 +1,6 @@
 import {Request, Response} from 'express'
 import courses from './../db/courses';
-import {Course} from './../models/course'
+import {Course, update} from './../models/course'
 
 const getAllCourses = (req: Request, res: Response) =>{
     return res.json(courses);
@@ -32,7 +32,7 @@ const updateCourse = (req: Request, res: Response) =>{
     if(!course){
         return res.status(404).send('A course with given id is not found');
     }
-    course.name = req.body.name;
+    update(course, req.body);
     return res.json(course);
 };
 
